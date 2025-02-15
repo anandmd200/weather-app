@@ -1,21 +1,33 @@
 import axios from "axios";
 import React, { useState } from "react";
-import "../css/WeatherData.css"; // Import CSS file
-
+import "../css/WeatherData.css";
 const WeatherData = () => {
   const [data, setData] = useState(null);
   const [countryName, setCountryName] = useState("");
   const [cityName, setCityName] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const getWeatherData = async () => {
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityName},${countryName}&appid=ef91a5c63807b877203248c41cd40c2c&units=metric`;
-    const response = await axios.get(url);
-    setData(response.data);
+    try {
+      setData(null);
+      setLoading(true);
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityName},${countryName}&appid=ef91a5c63807b877203248c41cd40c2c&units=metric`;
+      const response = await axios.get(url);
+      setData(response.data);
+    } catch (error) {
+      alert(error?.response?.data?.message);
+      setCityName("");
+      setCountryName("");
+      console.log("Error while getting wearher data: ", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="weather-app">
       <h1 className="title">Weather App</h1>
+      {loading === true && <h1>Your data Loading....</h1>}
       <div className="input-container">
         <input
           placeholder="City"
